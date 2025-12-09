@@ -12,24 +12,6 @@ The application samples a cosine-based height field that decays with distance, s
 ./mvnw clean compile exec:java
 ```
 
-### Performance Optimization
-
-The application includes optimized JVM flags in `.mvn/jvm.config` that are automatically applied to all Maven commands. The configuration includes:
-
-- **ZGC garbage collector** for low-latency real-time rendering
-- **2GB heap** (adjustable based on your system)
-- **512MB direct memory** for off-heap MemorySegment usage
-- **Server-class JIT optimizations**
-
-To customize JVM options, edit `.mvn/jvm.config` or override with `MAVEN_OPTS`:
-
-```bash
-# Override JVM options for a single run
-MAVEN_OPTS="-XX:+UseG1GC -Xms4g -Xmx4g" ./mvnw clean compile exec:java
-```
-
-See `jvm-options.txt` for a complete list of performance tuning options and alternatives.
-
 ## References
 
 - https://github.com/davepl/sombrero
