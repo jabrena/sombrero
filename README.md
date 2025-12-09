@@ -1,72 +1,36 @@
 # Sombrero JavaFX
 
-Animated spinning ripple surface rendered with JavaFX. This is a JavaFX port of the Python/Pygame implementation from [davepl/sombrero](https://github.com/davepl/sombrero).
+Animated spinning ripple surface rendered with JavaFX.
 
 The application samples a cosine-based height field that decays with distance, spins the mesh about the Z axis, then applies a presentation tilt for projection. Quads are depth-sorted for hidden-line removal, and edges are colorized via HSV using height-based amplitude to map low-to-high elevations across the spectrum.
 
-## Requirements
+![](image.png)
 
-- Java 21 or higher
-- Maven 3.6 or higher
-
-## Building
-
-To compile the project:
+## How to run in local
 
 ```bash
-mvn clean compile
+./mvnw clean compile exec:java
 ```
 
-## Running
+### Performance Optimization
 
-### Using Maven Exec Plugin
+The application includes optimized JVM flags in `.mvn/jvm.config` that are automatically applied to all Maven commands. The configuration includes:
 
-The easiest way to run the application is using the Maven Exec plugin:
+- **ZGC garbage collector** for low-latency real-time rendering
+- **2GB heap** (adjustable based on your system)
+- **512MB direct memory** for off-heap MemorySegment usage
+- **Server-class JIT optimizations**
+
+To customize JVM options, edit `.mvn/jvm.config` or override with `MAVEN_OPTS`:
 
 ```bash
-mvn exec:java
+# Override JVM options for a single run
+MAVEN_OPTS="-XX:+UseG1GC -Xms4g -Xmx4g" ./mvnw clean compile exec:java
 ```
 
-This will automatically compile the project (if needed) and launch the JavaFX application.
+See `jvm-options.txt` for a complete list of performance tuning options and alternatives.
 
-### Alternative: Running with explicit JavaFX module path
+## References
 
-If you need to run it directly with Java, you'll need to ensure JavaFX modules are available:
-
-```bash
-mvn clean package
-java --module-path <path-to-javafx-sdk>/lib --add-modules javafx.controls -cp target/classes com.sombrero.SombreroApp
-```
-
-However, the Maven Exec plugin handles this automatically, so `mvn exec:java` is recommended.
-
-## Controls
-
-- **ESC**: Exit the application
-- **Close Window**: Click the window close button to exit
-
-## Project Structure
-
-```
-.
-├── pom.xml                          # Maven project configuration
-├── src/
-│   └── main/
-│       └── java/
-│           └── com/
-│               └── sombrero/
-│                   └── SombreroApp.java  # Main application class
-└── README.md                        # This file
-```
-
-## Technical Details
-
-- **Window Size**: 960x720 pixels
-- **Frame Rate**: 60 FPS (target)
-- **Grid Resolution**: 28x28 units with 1-unit step
-- **Rendering**: Hidden-line removal using painter's algorithm (depth sorting)
-- **Colorization**: HSV color space mapped from height amplitude
-
-## License
-
-See LICENSE file for details.
+- https://github.com/davepl/sombrero
+- https://openjfx.io/

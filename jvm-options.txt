@@ -1,0 +1,115 @@
+# JVM Options for Optimal Performance - Sombrero JavaFX
+# Real-time rendering application with heavy math computations and off-heap memory
+
+# ============================================
+# GARBAGE COLLECTOR (Choose one)
+# ============================================
+
+# Option 1: ZGC (Recommended for low-latency, Java 17+)
+# Best for: Real-time applications, predictable pause times
+-XX:+UseZGC
+-XX:+UnlockExperimentalVMOptions  # Not needed in Java 21+
+
+# Option 2: G1GC (Good alternative, more mature)
+# Best for: Balanced throughput and latency
+# -XX:+UseG1GC
+# -XX:MaxGCPauseMillis=10
+# -XX:G1HeapRegionSize=16m
+
+# Option 3: Serial GC (For single-core or very small heaps)
+# -XX:+UseSerialGC
+
+# ============================================
+# MEMORY SETTINGS
+# ============================================
+
+# Heap size - adjust based on your system
+# Start with 2GB, increase if needed
+-Xms2g
+-Xmx2g
+
+# Direct memory (for off-heap MemorySegment usage)
+-XX:MaxDirectMemorySize=512m
+
+# ============================================
+# JIT COMPILER OPTIMIZATIONS
+# ============================================
+
+# Aggressive inlining for hot methods
+-XX:CompileThreshold=1000
+-XX:+AggressiveOpts
+
+# Enable tiered compilation (default in Java 8+, but explicit is good)
+-XX:+TieredCompilation
+
+# Optimize for server-class machines
+-server
+
+# ============================================
+# MATH PERFORMANCE
+# ============================================
+
+# Use fast math (may reduce precision slightly, but faster)
+# WARNING: May affect numerical accuracy - test carefully!
+# -XX:+UseFastMath
+
+# Enable strict math (default, but ensures IEEE compliance)
+-XX:+UseStrictMath
+
+# ============================================
+# FOREIGN MEMORY API (Java 21+)
+# ============================================
+
+# Enable foreign memory API (should be default in Java 25)
+--enable-native-access=ALL-UNNAMED
+
+# ============================================
+# JAVAFX PERFORMANCE
+# ============================================
+
+# Hardware acceleration (usually enabled by default)
+-Dprism.order=sw  # Software rendering (fallback)
+# -Dprism.order=es2  # OpenGL ES 2 (if available)
+# -Dprism.order=j2d  # Java 2D (if available)
+
+# Disable vsync for maximum FPS (may cause tearing)
+# -Djavafx.animation.framerate=60
+
+# ============================================
+# GENERAL PERFORMANCE
+# ============================================
+
+# Disable biased locking (better for modern JVMs)
+-XX:-UseBiasedLocking
+
+# Enable compressed OOPs (saves memory, default on 64-bit)
+-XX:+UseCompressedOops
+
+# Disable class data sharing for faster startup (optional)
+# -Xshare:off
+
+# ============================================
+# MONITORING/DEBUGGING (Remove in production)
+# ============================================
+
+# GC logging (optional, for tuning)
+# -Xlog:gc*:file=gc.log:time,uptime,level,tags
+
+# JIT compilation logging (optional, for analysis)
+# -XX:+PrintCompilation
+# -XX:+UnlockDiagnosticVMOptions
+# -XX:+LogCompilation
+
+# ============================================
+# RECOMMENDED MINIMAL SET (Copy this)
+# ============================================
+
+# For Java 21+ with ZGC:
+-XX:+UseZGC -Xms2g -Xmx2g -XX:MaxDirectMemorySize=512m -server
+
+# For Java 17-20 with ZGC:
+-XX:+UseZGC -XX:+UnlockExperimentalVMOptions -Xms2g -Xmx2g -XX:MaxDirectMemorySize=512m -server
+
+# For older Java or if ZGC unavailable (G1GC):
+-XX:+UseG1GC -XX:MaxGCPauseMillis=10 -Xms2g -Xmx2g -XX:MaxDirectMemorySize=512m -server
+
